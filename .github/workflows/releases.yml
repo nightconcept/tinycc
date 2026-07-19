@@ -79,6 +79,7 @@ jobs:
           VERSION: ${{ needs.prepare.outputs.version }}
         run: |
           printf '%s\n' "$VERSION" > VERSION
+          git add VERSION
           ./configure --prefix=/
           make -j2
           make install DESTDIR="$RUNNER_TEMP/stage"
