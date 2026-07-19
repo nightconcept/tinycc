@@ -26,7 +26,7 @@ jobs:
       nightly: ${{ steps.release.outputs.nightly }}
       build: ${{ steps.release.outputs.build }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: TinyCC/tinycc
           ref: ${{ inputs.ref || 'mob' }}
@@ -68,7 +68,7 @@ jobs:
             platform: macos-arm64
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: TinyCC/tinycc
           ref: ${{ needs.prepare.outputs.sha }}
@@ -101,7 +101,7 @@ jobs:
           tar -czf "$RUNNER_TEMP/$asset" -C "$RUNNER_TEMP/relocated" .
           echo "ASSET=$RUNNER_TEMP/$asset" >> "$GITHUB_ENV"
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.platform }}
           path: ${{ env.ASSET }}
@@ -112,7 +112,7 @@ jobs:
     if: needs.prepare.outputs.build == 'true'
     runs-on: windows-2025
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: TinyCC/tinycc
           ref: ${{ needs.prepare.outputs.sha }}
@@ -140,7 +140,7 @@ jobs:
           Compress-Archive -Path "$env:RUNNER_TEMP\relocated\*" -DestinationPath "$env:RUNNER_TEMP\$asset"
           "ASSET=$env:RUNNER_TEMP\$asset" >> $env:GITHUB_ENV
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: windows-x64
           path: ${{ env.ASSET }}
@@ -151,13 +151,13 @@ jobs:
     if: needs.prepare.outputs.build == 'true'
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           repository: TinyCC/tinycc
           ref: ${{ needs.prepare.outputs.sha }}
           fetch-depth: 1
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           path: dist
           merge-multiple: true
