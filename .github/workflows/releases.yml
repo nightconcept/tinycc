@@ -1,0 +1,185 @@
+name: release builds
+
+on:
+  schedule:
+    - cron: "23 8 * * *"
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Upstream branch, tag, or commit
+        default: mob
+        required: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ inputs.ref || 'mob' }}
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    runs-on: ubuntu-22.04
+    outputs:
+      sha: ${{ steps.release.outputs.sha }}
+      version: ${{ steps.release.outputs.version }}
+      nightly: ${{ steps.release.outputs.nightly }}
+      build: ${{ steps.release.outputs.build }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: TinyCC/tinycc
+          ref: ${{ inputs.ref || 'mob' }}
+          fetch-depth: 1
+
+      - id: release
+        name: Resolve release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REQUESTED_REF: ${{ inputs.ref || 'mob' }}
+        run: |
+          sha=$(git rev-parse HEAD)
+          version=$(head -n 1 VERSION)
+          nightly=true
+          if git ls-remote --exit-code --tags origin "refs/tags/$REQUESTED_REF" >/dev/null 2>&1; then
+            nightly=false
+          else
+            version="$version-${sha:0:8}"
+          fi
+          build=true
+          gh release view "$version" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1 && build=false
+          {
+            echo "sha=$sha"
+            echo "version=$version"
+            echo "nightly=$nightly"
+            echo "build=$build"
+          } >> "$GITHUB_OUTPUT"
+
+  build-unix:
+    needs: prepare
+    if: needs.prepare.outputs.build == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-22.04
+            platform: linux-x64
+          - os: macos-15
+            platform: macos-arm64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: TinyCC/tinycc
+          ref: ${{ needs.prepare.outputs.sha }}
+
+      - name: Build and package
+        env:
+          PLATFORM: ${{ matrix.platform }}
+          VERSION: ${{ needs.prepare.outputs.version }}
+        run: |
+          printf '%s\n' "$VERSION" > VERSION
+          ./configure --prefix=/
+          make -j2
+          make install DESTDIR="$RUNNER_TEMP/stage"
+
+          mv "$RUNNER_TEMP/stage/bin/tcc" "$RUNNER_TEMP/stage/bin/tcc.bin"
+          cat > "$RUNNER_TEMP/stage/bin/tcc" <<'EOF'
+          #!/bin/sh
+          root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+          exec "$root/bin/tcc.bin" -B"$root/lib/tcc" "$@"
+          EOF
+          chmod +x "$RUNNER_TEMP/stage/bin/tcc"
+
+          mv "$RUNNER_TEMP/stage" "$RUNNER_TEMP/relocated"
+          "$RUNNER_TEMP/relocated/bin/tcc" -v
+          printf 'int main(void) { return 0; }\n' > "$RUNNER_TEMP/hello.c"
+          "$RUNNER_TEMP/relocated/bin/tcc" "$RUNNER_TEMP/hello.c" -o "$RUNNER_TEMP/hello"
+          "$RUNNER_TEMP/hello"
+
+          asset="tinycc-$VERSION-$PLATFORM.tar.gz"
+          tar -czf "$RUNNER_TEMP/$asset" -C "$RUNNER_TEMP/relocated" .
+          echo "ASSET=$RUNNER_TEMP/$asset" >> "$GITHUB_ENV"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.platform }}
+          path: ${{ env.ASSET }}
+          if-no-files-found: error
+
+  build-windows:
+    needs: prepare
+    if: needs.prepare.outputs.build == 'true'
+    runs-on: windows-2025
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: TinyCC/tinycc
+          ref: ${{ needs.prepare.outputs.sha }}
+
+      - name: Build
+        shell: cmd
+        env:
+          VERSION: ${{ needs.prepare.outputs.version }}
+        run: |
+          cd win32
+          for /f "delims=" %%i in ('vswhere.exe -latest -property installationPath') do call "%%i\VC\Auxiliary\Build\vcvarsall.bat" amd64
+          call build-tcc.bat -c cl -t x86_64 -v "%VERSION%" -i "%RUNNER_TEMP%\stage"
+
+      - name: Smoke check and package
+        shell: pwsh
+        env:
+          VERSION: ${{ needs.prepare.outputs.version }}
+        run: |
+          Move-Item "$env:RUNNER_TEMP\stage" "$env:RUNNER_TEMP\relocated"
+          & "$env:RUNNER_TEMP\relocated\tcc.exe" -v
+          'int main(void) { return 0; }' | Set-Content "$env:RUNNER_TEMP\hello.c"
+          & "$env:RUNNER_TEMP\relocated\tcc.exe" "$env:RUNNER_TEMP\hello.c" -o "$env:RUNNER_TEMP\hello.exe"
+          & "$env:RUNNER_TEMP\hello.exe"
+          $asset = "tinycc-$env:VERSION-windows-x64.zip"
+          Compress-Archive -Path "$env:RUNNER_TEMP\relocated\*" -DestinationPath "$env:RUNNER_TEMP\$asset"
+          "ASSET=$env:RUNNER_TEMP\$asset" >> $env:GITHUB_ENV
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-x64
+          path: ${{ env.ASSET }}
+          if-no-files-found: error
+
+  release:
+    needs: [prepare, build-unix, build-windows]
+    if: needs.prepare.outputs.build == 'true'
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: TinyCC/tinycc
+          ref: ${{ needs.prepare.outputs.sha }}
+          fetch-depth: 1
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NIGHTLY: ${{ needs.prepare.outputs.nightly }}
+          SHA: ${{ needs.prepare.outputs.sha }}
+          VERSION: ${{ needs.prepare.outputs.version }}
+        run: |
+          (cd dist && sha256sum ./* > checksums.txt)
+          gh auth setup-git
+          git tag "$VERSION" "$SHA"
+          git remote add fork "https://github.com/$GITHUB_REPOSITORY.git"
+          git push fork "refs/tags/$VERSION"
+
+          latest=false
+          [[ "$NIGHTLY" == "true" ]] && latest=true
+          gh release create "$VERSION" dist/* \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "TinyCC $VERSION" \
+            --notes "Built from TinyCC/tinycc@$SHA." \
+            --verify-tag \
+            --latest="$latest"
