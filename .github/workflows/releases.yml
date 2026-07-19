@@ -19,7 +19,7 @@ concurrency:
 
 jobs:
   prepare:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     outputs:
       sha: ${{ steps.release.outputs.sha }}
       version: ${{ steps.release.outputs.version }}
@@ -62,9 +62,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: ubuntu-22.04
-            platform: linux-x64
-          - os: macos-15
+          - os: ubuntu-latest
+            platform: ubuntu-x64
+          - os: macos-latest
             platform: macos-arm64
     runs-on: ${{ matrix.os }}
     steps:
@@ -98,8 +98,8 @@ jobs:
           "$RUNNER_TEMP/relocated/bin/tcc" "$RUNNER_TEMP/hello.c" -o "$RUNNER_TEMP/hello"
           "$RUNNER_TEMP/hello"
 
-          asset="tinycc-$VERSION-$PLATFORM.tar.gz"
-          tar -czf "$RUNNER_TEMP/$asset" -C "$RUNNER_TEMP/relocated" .
+          asset="tinycc-$VERSION-$PLATFORM.zip"
+          (cd "$RUNNER_TEMP/relocated" && zip -qr "$RUNNER_TEMP/$asset" .)
           echo "ASSET=$RUNNER_TEMP/$asset" >> "$GITHUB_ENV"
 
       - uses: actions/upload-artifact@v7
@@ -137,20 +137,20 @@ jobs:
           'int main(void) { return 0; }' | Set-Content "$env:RUNNER_TEMP\hello.c"
           & "$env:RUNNER_TEMP\relocated\tcc.exe" "$env:RUNNER_TEMP\hello.c" -o "$env:RUNNER_TEMP\hello.exe"
           & "$env:RUNNER_TEMP\hello.exe"
-          $asset = "tinycc-$env:VERSION-windows-x64.zip"
+          $asset = "tinycc-$env:VERSION-win-x64.zip"
           Compress-Archive -Path "$env:RUNNER_TEMP\relocated\*" -DestinationPath "$env:RUNNER_TEMP\$asset"
           "ASSET=$env:RUNNER_TEMP\$asset" >> $env:GITHUB_ENV
 
       - uses: actions/upload-artifact@v7
         with:
-          name: windows-x64
+          name: win-x64
           path: ${{ env.ASSET }}
           if-no-files-found: error
 
   release:
     needs: [prepare, build-unix, build-windows]
     if: needs.prepare.outputs.build == 'true'
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
         with:
