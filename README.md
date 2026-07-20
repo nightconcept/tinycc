@@ -45,9 +45,6 @@ just gate-fast       # fmt + zig unit tests (pre-commit)
 just gate            # gate-fast + build + full test suite (pre-push)
 ```
 
-See `AGENTS.md` for full engineering standards and `src/CodingStyle`
-for C conventions.
-
 ## License
 
 The mtcc project is licensed under the [`LGPL-2.1 LICENSE`](LICENSE).
