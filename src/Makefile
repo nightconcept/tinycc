@@ -285,8 +285,10 @@ mtcc-runtime.tar: libtcc1.a
 	@tar -cf $@ -C .mtcc-runtime .
 	@rm -rf .mtcc-runtime
 
-mtcc$(EXESUF): $(TOP)/mtcc.zig mtcc-tcc.o mtcc-runtime.tar
-	$S$(ZIG) build-exe $(MTCC_ZIG_FLAGS) -O ReleaseSafe -femit-bin=$@ $< mtcc-tcc.o -lc -lm -ldl -lpthread
+MTCC_ZIG_SRC ?= $(TOP)/mtcc.zig
+
+mtcc$(EXESUF): $(MTCC_ZIG_SRC) mtcc-tcc.o mtcc-runtime.tar
+	$S$(ZIG) build-exe $(MTCC_ZIG_FLAGS) -O ReleaseSafe -femit-bin=$@ $(MTCC_ZIG_SRC) mtcc-tcc.o -lc -lm -ldl -lpthread
 
 # Cross Tiny C Compilers
 # (the TCCDEFS_H dependency is only necessary for parallel makes,
@@ -511,7 +513,7 @@ distclean: clean
 	@rm -vf config.h config.mak config.texi
 	@rm -vf $(TCCDOCS)
 
-.PHONY: all clean test test-mtcc test-relocate-macos tar tags ETAGS doc distclean install uninstall FORCE
+.PHONY: all clean test tar tags ETAGS doc distclean install uninstall FORCE
 
 help:
 	@echo "make"
@@ -551,13 +553,6 @@ help:
 	@echo "   Or also, for the cross platform files in /usr/<triplet>"
 	@echo "      TRIPLET-i386 = i686-linux-gnu"
 	@echo "   (*) tcc replaces {B} by 'tccdir' and {R} by 'CONFIG_SYSROOT'"
-
-test-relocate-macos:
-	sh $(TOP)/tests/relocate-macos.sh
-
-test-mtcc: mtcc$(EXESUF)
-	$(ZIG) test $(MTCC_ZIG_FLAGS) $(TOP)/mtcc.zig -lc
-	sh $(TOP)/tests/mtcc-smoke.sh
 
 # --------------------------------------------------------------------------
 endif # ($(INCLUDED),no)

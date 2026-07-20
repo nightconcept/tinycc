@@ -17,5 +17,4 @@ the release workflow; Zig is not required at runtime.
 
 To build plain TinyCC itself (no Zig involved), see `src/README`.
 
-See `AGENTS.md` for engineering standards and `PLAN.md` for the frontend's
-scope, packaging, branches, and remotes.
+See `AGENTS.md` for engineering standards.

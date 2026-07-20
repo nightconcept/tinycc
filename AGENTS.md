@@ -12,15 +12,19 @@ remain easy to rebase onto upstream TinyCC.
 - C90-oriented TinyCC compiler and GNU Make build
 - Zig frontend (`mtcc.zig`)
 - TinyCC compiler sources (`src/`)
-- Shell-based smoke and release scripts
+- `scripts/dev.py` build/test/package CLI, driven via `just` (tools pinned in `mise.toml`)
 
 ## Essential Commands
 
-- **Configure**: `./src/configure`
-- **Build**: `make` or `make mtcc`
-- **Test**: `make test` or `make test-mtcc`
+- **Tools**: `mise install` (zig, python, just)
+- **Build**: `just build` — out-of-tree configure+build into `build/` (objects,
+  libs, `tcc`, `mtcc`); repo root and `src/` stay clean
+- **Test legacy (vendored upstream TinyCC suite)**: `just test-legacy`
+- **Test toolchain (mtcc CLI, not compilation)**: `just test-toolchain`
+- **Test both, legacy first**: `just test`
+- **Package**: `just package` — copies `build/mtcc` into `dist/`
 - **Format Zig**: `zig fmt mtcc.zig`
-- **Lint C**: `./mtcc lint <file.c>` after building `mtcc`
+- **Lint C**: `./build/mtcc lint <file.c>` after `just build`
 
 ## Engineering Standards
 
@@ -28,11 +32,11 @@ remain easy to rebase onto upstream TinyCC.
 - Keep TCC changes small enough to rebase `dev` onto `upstream/mob`.
 - Use [Conventional Commits](https://www.conventionalcommits.org/) for commits,
   such as `feat:`, `fix:`, `docs:`, `refactor:`, `test:`, and `chore:`.
-- Run the smallest relevant test before committing; use `make test` for C changes
-  and `make test-mtcc` for MTCC changes.
+- Run the smallest relevant test before committing; use `just test-legacy` for C
+  changes and `just test-toolchain` for MTCC changes. Legacy tests always gate
+  before toolchain tests — `just test` enforces that order.
 
 ## Spoke Index
 
 - [README](README) — project overview, installation, and usage
-- [MTCC plan](PLAN.md) — frontend scope, packaging, branches, and remotes
 - [Coding style](src/CodingStyle) — C conventions and deeper testing guidance

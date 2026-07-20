@@ -15,7 +15,7 @@ const usage =
     \\
 ;
 
-const archive = @embedFile("mtcc-runtime.tar");
+const archive = @embedFile("build/mtcc-runtime.tar");
 const version = std.mem.trim(u8, @embedFile("src/VERSION"), " \r\n");
 
 pub fn main(init: std.process.Init) u8 {
