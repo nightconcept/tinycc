@@ -7,7 +7,7 @@ try {
     Push-Location $PSScriptRoot
     $env:TCC_C = "..\tcc.c"
     & .\build-tcc.bat -clean
-    & .\build-tcc.bat -c "$zig cc" -t x86_64
+    & .\build-tcc.bat -c "$zig cc -O2" -t x86_64
     if ($LASTEXITCODE) { throw "TCC build failed" }
     Pop-Location
 
@@ -23,7 +23,7 @@ try {
     Push-Location $root
     & tar -cf mtc-runtime.tar -C $stage .
     if ($LASTEXITCODE) { throw "runtime archive failed" }
-    & $zig cc -c tcc.c -o mtc-tcc.obj -DTCC_MAIN=tcc_main -DTCC_TARGET_PE -DTCC_TARGET_X86_64
+    & $zig cc -O2 -c tcc.c -o mtc-tcc.obj -DTCC_MAIN=tcc_main -DTCC_TARGET_PE -DTCC_TARGET_X86_64
     if ($LASTEXITCODE) { throw "embedded TCC build failed" }
     & $zig build-exe -O ReleaseSafe -femit-bin=mtc.exe mtc.zig mtc-tcc.obj -lc
     if ($LASTEXITCODE) { throw "MTC build failed" }

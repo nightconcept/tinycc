@@ -10,8 +10,8 @@ case "$(uname -s)" in
     ;;
   Linux)
     platform=linux-x64
-    cc="$zig cc -target native-linux-musl"
-    zig_flags="-target native-linux-musl"
+    cc="$zig cc"
+    zig_flags=
     ;;
   *)
     echo "unsupported build host: $(uname -s)" >&2
