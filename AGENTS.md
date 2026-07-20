@@ -16,7 +16,9 @@ remain easy to rebase onto upstream TinyCC.
 
 ## Essential Commands
 
-- **Tools**: `mise install` (zig, python, just)
+- **Tools**: `mise install` (zig, python, just, lefthook), then `just hooks-install`
+- **Gate**: `just gate-fast` (fmt + zig unit tests, runs pre-commit) or
+  `just gate` (adds build + legacy + toolchain tests, runs pre-push)
 - **Build**: `just build` — out-of-tree configure+build into `build/` (objects,
   libs, `tcc`, `mtcc`); repo root and `src/` stay clean
 - **Test legacy (vendored upstream TinyCC suite)**: `just test-legacy`

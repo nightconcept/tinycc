@@ -29,3 +29,12 @@ fmt:
 
 lint file:
     ./build/mtcc lint {{file}}
+
+gate:
+    python3 scripts/gate.py
+
+gate-fast:
+    python3 scripts/gate.py --fast
+
+hooks-install:
+    lefthook install
