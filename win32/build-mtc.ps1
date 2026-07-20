@@ -9,6 +9,8 @@ try {
     & .\build-tcc.bat -clean
     & .\build-tcc.bat -c "$zig cc -O2" -t x86_64
     if ($LASTEXITCODE) { throw "TCC build failed" }
+    & $zig cc -O2 -shared ..\libtcc.c -o libtcc.dll -DTCC_TARGET_PE -DTCC_TARGET_X86_64 -DLIBTCC_AS_DLL
+    if ($LASTEXITCODE) { throw "libtcc build failed" }
     Pop-Location
 
     Push-Location "$root\tests"
