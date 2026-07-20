@@ -133,7 +133,7 @@ TCCDOCS = tcc.1 tcc-doc.html tcc-doc.info
 all: $(PROGS) $(TCCLIBS) $(TCCDOCS)
 
 ZIG ?= zig
-MTC_ZIG_FLAGS ?=
+MTCC_ZIG_FLAGS ?=
 
 # cross compiler targets to build
 TCC_X = i386 x86_64 i386-win32 x86_64-win32 x86_64-osx arm arm64 arm64-win32 arm-wince c67
@@ -273,20 +273,20 @@ $(X)tcc.o : DEFINES += $(DEF_GITHASH)
 tcc$(EXESUF): tcc.o $(LIBTCC)
 	$S$(CC) -o $@ $^ $(addsuffix ,$(LIBS) $(LDFLAGS) $(LINK_LIBTCC))
 
-mtc-tcc.o: $($T_FILES) $(TCCDEFS_H)
+mtcc-tcc.o: $($T_FILES) $(TCCDEFS_H)
 	$S$(CC) -o $@ -c $(TOPSRC)/tcc.c $(DEFINES) $(CFLAGS) -DTCC_MAIN=tcc_main
-mtc-tcc.o: DEFINES += $(DEF_GITHASH)
+mtcc-tcc.o: DEFINES += $(DEF_GITHASH)
 
-mtc-runtime.tar: libtcc1.a
-	@rm -rf .mtc-runtime
-	@mkdir -p .mtc-runtime/include
-	@cp $(TOPSRC)/include/*.h $(TOPSRC)/tcclib.h .mtc-runtime/include
-	@cp libtcc1.a $(wildcard $(EXTRA_O)) .mtc-runtime
-	@tar -cf $@ -C .mtc-runtime .
-	@rm -rf .mtc-runtime
+mtcc-runtime.tar: libtcc1.a
+	@rm -rf .mtcc-runtime
+	@mkdir -p .mtcc-runtime/include
+	@cp $(TOPSRC)/include/*.h $(TOPSRC)/tcclib.h .mtcc-runtime/include
+	@cp libtcc1.a $(wildcard $(EXTRA_O)) .mtcc-runtime
+	@tar -cf $@ -C .mtcc-runtime .
+	@rm -rf .mtcc-runtime
 
-mtc$(EXESUF): $(TOPSRC)/mtc.zig mtc-tcc.o mtc-runtime.tar
-	$S$(ZIG) build-exe $(MTC_ZIG_FLAGS) -O ReleaseSafe -femit-bin=$@ $< mtc-tcc.o -lc -lm -ldl -lpthread
+mtcc$(EXESUF): $(TOP)/mtcc.zig mtcc-tcc.o mtcc-runtime.tar
+	$S$(ZIG) build-exe $(MTCC_ZIG_FLAGS) -O ReleaseSafe -femit-bin=$@ $< mtcc-tcc.o -lc -lm -ldl -lpthread
 
 # Cross Tiny C Compilers
 # (the TCCDEFS_H dependency is only necessary for parallel makes,
@@ -489,19 +489,19 @@ tcov-tes% : tcc_c$(EXESUF)
 	@rm -f $<.tcov
 	@$(MAKE) --no-print-directory TCC_LOCAL=$(CURDIR)/$< tes$*
 tcc_c$(EXESUF): $($T_FILES)
-	$S$(TCC) tcc.c -o $@ -ftest-coverage $(DEFINES) $(LIBS)
+	$S$(TCC) $(TOPSRC)/tcc.c -o $@ -ftest-coverage $(DEFINES) $(LIBS)
 # run tests with sanitize option
 sani-tes% : tcc_s$(EXESUF)
 	@$(MAKE) --no-print-directory TCC_LOCAL=$(CURDIR)/$< tes$*
 tcc_s$(EXESUF): $($T_FILES)
-	$S$(CC) tcc.c -o $@ -fsanitize=address,undefined $(DEFINES) $(CFLAGS) $(LDFLAGS) $(LIBS)
+	$S$(CC) $(TOPSRC)/tcc.c -o $@ -fsanitize=address,undefined $(DEFINES) $(CFLAGS) $(LDFLAGS) $(LIBS)
 # test the installed tcc instead
 test-install: $(TCCDEFS_H)
 	@$(MAKE) -C tests TESTINSTALL=yes #_all
 
 clean:
-	@rm -f tcc mtc *-tcc tcc_p tcc_c tcc_s mtc-runtime.tar
-	@rm -rf .mtc-runtime dist
+	@rm -f tcc mtcc *-tcc tcc_p tcc_c tcc_s mtcc-runtime.tar
+	@rm -rf .mtcc-runtime dist
 	@rm -f tags ETAGS *.o *.a *.so* *.out *.log lib*.def *.exe *.dll
 	@rm -f a.out *.dylib *_.h *.pod *.tcov
 	@$(MAKE) -s -C lib $@
@@ -511,7 +511,7 @@ distclean: clean
 	@rm -vf config.h config.mak config.texi
 	@rm -vf $(TCCDOCS)
 
-.PHONY: all clean test test-mtc test-relocate-macos tar tags ETAGS doc distclean install uninstall FORCE
+.PHONY: all clean test test-mtcc test-relocate-macos tar tags ETAGS doc distclean install uninstall FORCE
 
 help:
 	@echo "make"
@@ -555,9 +555,9 @@ help:
 test-relocate-macos:
 	sh $(TOPSRC)/tests/relocate-macos.sh
 
-test-mtc: mtc$(EXESUF)
-	$(ZIG) test $(MTC_ZIG_FLAGS) $(TOPSRC)/mtc.zig -lc
-	sh $(TOPSRC)/tests/mtc-smoke.sh
+test-mtcc: mtcc$(EXESUF)
+	$(ZIG) test $(MTCC_ZIG_FLAGS) $(TOP)/mtcc.zig -lc
+	sh $(TOP)/tests/mtcc-smoke.sh
 
 # --------------------------------------------------------------------------
 endif # ($(INCLUDED),no)

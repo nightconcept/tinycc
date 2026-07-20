@@ -4,7 +4,7 @@
 
 TOP = ..
 include $(TOP)/Makefile
-VPATH = $(TOPSRC)/tests $(TOPSRC)
+VPATH = $(TOPSRC)/tests $(TOPSRC) $(TOPSRC)
 CFLAGS := $(filter-out -g% -O%,$(CFLAGS)) -I$(TOPSRC) -I$(TOP) $(LDFLAGS)
 
 # what tests to run
@@ -348,4 +348,3 @@ clean:
 	rm -f ex? tcc_g weaktest.*.txt *.def *.pdb *.obj libtcc_test_mt
 	@$(MAKE) -C tests2 $@
 	@$(MAKE) -C pp $@
-

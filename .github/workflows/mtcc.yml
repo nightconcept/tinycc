@@ -1,4 +1,4 @@
-name: mtc build and test
+name: mtcc build and test
 
 on:
   push:
@@ -24,11 +24,11 @@ jobs:
       - uses: mlugg/setup-zig@v2.2.1
         with:
           version: 0.16.0
-      - run: sh scripts/build-mtc.sh
+      - run: sh scripts/build-mtcc.sh
       - uses: actions/upload-artifact@v7
         with:
-          name: mtc-${{ matrix.artifact }}
-          path: dist/mtc-${{ matrix.artifact }}
+          name: mtcc-${{ matrix.artifact }}
+          path: dist/mtcc-${{ matrix.artifact }}
           if-no-files-found: error
 
   windows:
@@ -39,9 +39,9 @@ jobs:
         with:
           version: 0.16.0
       - shell: pwsh
-        run: .\win32\build-mtc.ps1
+        run: .\win32\build-mtcc.ps1
       - uses: actions/upload-artifact@v7
         with:
-          name: mtc-windows-x64
-          path: dist/mtc-windows-x64.exe
+          name: mtcc-windows-x64
+          path: dist/mtcc-windows-x64.exe
           if-no-files-found: error

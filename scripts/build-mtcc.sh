@@ -20,11 +20,11 @@ case "$(uname -s)" in
 esac
 
 make distclean >/dev/null 2>&1 || true
-./configure --prefix=/ --cc="$cc"
+./src/configure --prefix=/ --cc="$cc"
 make -j2
-make test-mtc ZIG="$zig" MTC_ZIG_FLAGS="$zig_flags"
+make test-mtcc ZIG="$zig" MTCC_ZIG_FLAGS="$zig_flags"
 make test CC=/usr/bin/cc
 make test-relocate-macos
 
 mkdir -p dist
-cp mtc "dist/mtc-$platform"
+cp mtcc "dist/mtcc-$platform"

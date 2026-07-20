@@ -5,22 +5,22 @@ const Io = std.Io;
 extern fn tcc_main(argc: c_int, argv: [*c][*c]u8) c_int;
 
 const usage =
-    \\MTC (Modern Tiny C Compiler)
+    \\MTCC (Modern Tiny C Compiler)
     \\Usage:
-    \\  mtc file.c [args]            Compile and run
-    \\  mtc run file.c -- [args]     Compile and run
-    \\  mtc build [tcc arguments]    Build an artifact
-    \\  mtc lint file.c              Compile with warnings as errors
-    \\  mtc tcc [tcc arguments]      Use the original TCC interface
+    \\  mtcc file.c [args]            Compile and run
+    \\  mtcc run file.c -- [args]     Compile and run
+    \\  mtcc build [tcc arguments]    Build an artifact
+    \\  mtcc lint file.c              Compile with warnings as errors
+    \\  mtcc tcc [tcc arguments]      Use the original TCC interface
     \\
 ;
 
-const archive = @embedFile("mtc-runtime.tar");
-const version = std.mem.trim(u8, @embedFile("VERSION"), " \r\n");
+const archive = @embedFile("mtcc-runtime.tar");
+const version = std.mem.trim(u8, @embedFile("src/VERSION"), " \r\n");
 
 pub fn main(init: std.process.Init) u8 {
     return run(init) catch |err| {
-        std.debug.print("mtc: {s}\n", .{@errorName(err)});
+        std.debug.print("mtcc: {s}\n", .{@errorName(err)});
         return 1;
     };
 }
@@ -70,7 +70,7 @@ fn route(arena: std.mem.Allocator, cache: []const u8, args: []const [:0]const u8
 }
 
 fn prepareRuntime(arena: std.mem.Allocator, io: Io, env: *const std.process.Environ.Map) ![]const u8 {
-    const cache = if (env.get("MTC_CACHE_DIR")) |path|
+    const cache = if (env.get("MTCC_CACHE_DIR")) |path|
         path
     else blk: {
         const base = switch (builtin.os.tag) {
@@ -79,7 +79,7 @@ fn prepareRuntime(arena: std.mem.Allocator, io: Io, env: *const std.process.Envi
             else => env.get("XDG_CACHE_HOME") orelse try std.fs.path.join(arena, &.{ env.get("HOME") orelse return error.MissingCacheDirectory, ".cache" }),
         };
         const target = try std.fmt.allocPrint(arena, "{s}-{s}-{s}", .{ version, @tagName(builtin.cpu.arch), @tagName(builtin.os.tag) });
-        break :blk try std.fs.path.join(arena, &.{ base, "mtc", target });
+        break :blk try std.fs.path.join(arena, &.{ base, "mtcc", target });
     };
 
     const marker = try std.fs.path.join(arena, &.{ cache, ".complete" });
