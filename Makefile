@@ -132,6 +132,9 @@ TCCDOCS = tcc.1 tcc-doc.html tcc-doc.info
 
 all: $(PROGS) $(TCCLIBS) $(TCCDOCS)
 
+ZIG ?= zig
+MTC_ZIG_FLAGS ?=
+
 # cross compiler targets to build
 TCC_X = i386 x86_64 i386-win32 x86_64-win32 x86_64-osx arm arm64 arm64-win32 arm-wince c67
 TCC_X += riscv64 arm64-osx
@@ -269,6 +272,21 @@ $(X)tcc.o : DEFINES += $(DEF_GITHASH)
 # Host Tiny C Compiler
 tcc$(EXESUF): tcc.o $(LIBTCC)
 	$S$(CC) -o $@ $^ $(addsuffix ,$(LIBS) $(LDFLAGS) $(LINK_LIBTCC))
+
+mtc-tcc.o: $($T_FILES) $(TCCDEFS_H)
+	$S$(CC) -o $@ -c $(TOPSRC)/tcc.c $(DEFINES) $(CFLAGS) -DTCC_MAIN=tcc_main
+mtc-tcc.o: DEFINES += $(DEF_GITHASH)
+
+mtc-runtime.tar: libtcc1.a
+	@rm -rf .mtc-runtime
+	@mkdir -p .mtc-runtime/include
+	@cp $(TOPSRC)/include/*.h $(TOPSRC)/tcclib.h .mtc-runtime/include
+	@cp libtcc1.a $(wildcard $(EXTRA_O)) .mtc-runtime
+	@tar -cf $@ -C .mtc-runtime .
+	@rm -rf .mtc-runtime
+
+mtc$(EXESUF): $(TOPSRC)/mtc.zig mtc-tcc.o mtc-runtime.tar
+	$S$(ZIG) build-exe $(MTC_ZIG_FLAGS) -O ReleaseSafe -femit-bin=$@ $< mtc-tcc.o -lc -lm -ldl -lpthread
 
 # Cross Tiny C Compilers
 # (the TCCDEFS_H dependency is only necessary for parallel makes,
@@ -482,7 +500,8 @@ test-install: $(TCCDEFS_H)
 	@$(MAKE) -C tests TESTINSTALL=yes #_all
 
 clean:
-	@rm -f tcc *-tcc tcc_p tcc_c tcc_s
+	@rm -f tcc mtc *-tcc tcc_p tcc_c tcc_s mtc-runtime.tar
+	@rm -rf .mtc-runtime dist
 	@rm -f tags ETAGS *.o *.a *.so* *.out *.log lib*.def *.exe *.dll
 	@rm -f a.out *.dylib *_.h *.pod *.tcov
 	@$(MAKE) -s -C lib $@
@@ -492,7 +511,7 @@ distclean: clean
 	@rm -vf config.h config.mak config.texi
 	@rm -vf $(TCCDOCS)
 
-.PHONY: all clean test tar tags ETAGS doc distclean install uninstall FORCE
+.PHONY: all clean test test-mtc test-relocate-macos tar tags ETAGS doc distclean install uninstall FORCE
 
 help:
 	@echo "make"
@@ -532,6 +551,13 @@ help:
 	@echo "   Or also, for the cross platform files in /usr/<triplet>"
 	@echo "      TRIPLET-i386 = i686-linux-gnu"
 	@echo "   (*) tcc replaces {B} by 'tccdir' and {R} by 'CONFIG_SYSROOT'"
+
+test-relocate-macos:
+	sh $(TOPSRC)/tests/relocate-macos.sh
+
+test-mtc: mtc$(EXESUF)
+	$(ZIG) test $(MTC_ZIG_FLAGS) $(TOPSRC)/mtc.zig -lc
+	sh $(TOPSRC)/tests/mtc-smoke.sh
 
 # --------------------------------------------------------------------------
 endif # ($(INCLUDED),no)

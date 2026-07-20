@@ -2262,32 +2262,38 @@ static uint32_t macho_swap32(uint32_t x)
 #define tbd_parse_trample *pos++=0
 
 #ifdef TCC_IS_NATIVE
-/* Looks for the active developer SDK set by xcode-select (or the default
-   one set during installation.) */
+/* Looks for the active developer SDK without baking its path into tcc. */
 ST_FUNC void tcc_add_macos_sdkpath(TCCState* s)
 {
-    char *sdkroot = NULL, *pos = NULL;
-    void* xcs = dlopen("libxcselect.dylib", RTLD_GLOBAL | RTLD_LAZY);
+    const char *sdkroot = getenv("SDKROOT");
+    FILE *fp = NULL;
+    char buf[4096], *end;
     CString path;
-    int (*f)(unsigned int, char**) = dlsym(xcs, "xcselect_host_sdk_path");
+
+    if (!sdkroot || !*sdkroot) {
+        fp = popen("/usr/bin/xcrun --sdk macosx --show-sdk-path", "r");
+        if (fp && fgets(buf, sizeof buf, fp)) {
+            end = buf + strlen(buf);
+            while (end > buf && (end[-1] == '\n' || end[-1] == '\r'))
+                *--end = 0;
+            sdkroot = buf;
+        }
+        if (fp)
+            pclose(fp);
+    }
+    if (!sdkroot || !*sdkroot)
+        return;
+
     cstr_new(&path);
-    if (f) f(1, &sdkroot);
-    if (sdkroot)
-        pos = strstr(sdkroot,"SDKs/MacOSX");
-    if (pos)
-        cstr_printf(&path, "%.*s.sdk/usr/lib", (int)(pos - sdkroot + 11), sdkroot);
-    /* must use free from libc directly */
-#pragma push_macro("free")
-#undef free
-    free(sdkroot);
-#pragma pop_macro("free")
-    if (path.size)
+    if (!s->nostdinc) {
+        cstr_printf(&path, "%s/usr/include", sdkroot);
+        tcc_add_sysinclude_path(s, (char*)path.data);
+    }
+    if (!s->nostdlib_paths) {
+        cstr_reset(&path);
+        cstr_printf(&path, "%s/usr/lib", sdkroot);
         tcc_add_library_path(s, (char*)path.data);
-    else
-        tcc_add_library_path(s,
-            "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib"
-            ":" "/Applications/Xcode.app/Developer/SDKs/MacOSX.sdk/usr/lib"
-            );
+    }
     cstr_free(&path);
 }
 

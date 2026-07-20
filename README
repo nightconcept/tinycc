@@ -47,6 +47,16 @@ options.
 We assume here that you know ANSI C. Look at the example ex1.c to know
 what the programs look like.
 
+MTC (Modern Tiny C Compiler) adds a Zig-built, single-file frontend:
+
+    ./configure --cc="zig cc"
+    make mtc
+    make test-mtc
+
+Run a C file directly with `mtc hello.c`. Use `mtc run`, `mtc build`,
+`mtc lint`, or `mtc tcc` for explicit command routing. Zig 0.16.0 is used by
+the release workflow; Zig is not required at runtime.
+
 The include file <tcclib.h> can be used if you want a small basic libc
 include support (especially useful for floppy disks). Of course, you
 can also use standard headers, although they are slower to compile.

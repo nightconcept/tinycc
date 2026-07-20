@@ -29,6 +29,7 @@ sysroot=""
 cross_prefix=""
 os_release=""
 cc="gcc"
+cc_set="no"
 ar="ar"
 bigendian="no"
 mingw32="no"
@@ -54,7 +55,7 @@ build_cross=
 quiet=
 
 # use CC/AR from environment when set
-test -n "$CC" && cc="$CC"
+test -n "$CC" && cc="$CC" && cc_set="yes"
 test -n "$AR" && ar="$AR"
 
 # set default CFLAGS if unset in environment
@@ -125,7 +126,7 @@ for opt do
   ;;
   --os-release=*) assign_opt "$opt" os_release
   ;;
-  --cc=*) assign_opt "$opt"
+  --cc=*) assign_opt "$opt" ; cc_set="yes"
   ;;
   --ar=*) assign_opt "$opt" ; ar_set="yes"
   ;;
@@ -363,10 +364,11 @@ case $targetos in
     default_conf "codesign"
     DLLSUF=".dylib"
     if test -z "$build_cross"; then
-      cc=`command -v cc`
-      cc=`readlink $cc || echo clang`
-      tcc_usrinclude="`xcrun --show-sdk-path`/usr/include"
-      default tcc_sysincludepaths "{B}/include:$tcc_usrinclude"
+      if test "$cc_set" = "no"; then
+        cc=`command -v cc`
+        cc=`readlink $cc || echo clang`
+      fi
+      default tcc_sysincludepaths "{B}/include"
       if test "${confvars%new_macho*}" = "${confvars}"; then
           # if new_macho was not specified and (known) ver <= 10, use old (=no)
           osxver=$(sw_vers -productVersion 2>/dev/null)  # X.Y.Z

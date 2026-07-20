@@ -970,6 +970,10 @@ LIBTCCAPI int tcc_set_output_type(TCCState *s, int output_type)
 #endif
     s->output_type = output_type;
 
+#if defined TCC_TARGET_MACHO && defined TCC_IS_NATIVE
+    tcc_add_macos_sdkpath(s);
+#endif
+
     if (!s->nostdinc) {
         /* default include paths */
         /* -isystem paths have already been handled */
@@ -1000,9 +1004,7 @@ LIBTCCAPI int tcc_set_output_type(TCCState *s, int output_type)
 # endif
 
 #elif defined TCC_TARGET_MACHO
-# ifdef TCC_IS_NATIVE
-    tcc_add_macos_sdkpath(s);
-# endif
+    /* SDK paths were added above, before object/preprocess early returns. */
 
 #else
     /* paths for crt objects */

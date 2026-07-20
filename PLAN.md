@@ -39,8 +39,8 @@ mtc tcc [tcc arguments]
 - Require only operating-system libraries at runtime. On macOS, require an
   installed SDK for programs using macOS headers and libraries.
 
-Start with macOS arm64, macOS x86_64, Linux x86_64, and Windows x86_64. Add
-other targets only after their smoke checks pass.
+Start with macOS arm64, Linux x86_64, and Windows x86_64. Add other targets
+only after their smoke checks pass.
 
 ## 4. Add tooling without growing a second compiler
 
@@ -51,6 +51,6 @@ other targets only after their smoke checks pass.
 ## Branches and remotes
 
 - `upstream/mob`: canonical TinyCC base.
-- `origin/dev`: MTC development, rebased onto `upstream/mob`.
-- `github/release-builds`: existing GitHub nightly builder; leave it isolated
+- `origin/mtc`: MTC development, rebased onto `upstream/mob`.
+- `origin/release-builds`: existing GitHub nightly builder; leave it isolated
   from MTC development.

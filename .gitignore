@@ -18,6 +18,9 @@ tcc_g
 tcc
 tcc_c
 tcc_p
+mtc
+mtc-runtime.tar
+dist
 *-tcc
 libtcc*.def
 

@@ -286,7 +286,10 @@ static unsigned getclock_ms(void)
 #endif
 }
 
-int main(int argc, char **argv)
+#ifndef TCC_MAIN
+# define TCC_MAIN main
+#endif
+int TCC_MAIN(int argc, char **argv)
 {
     TCCState *s, *s1;
     int ret, opt, n = 0, t = 0, done;
