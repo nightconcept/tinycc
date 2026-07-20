@@ -27,7 +27,7 @@ try {
     if ($LASTEXITCODE) { throw "runtime archive failed" }
     & $zig cc -O2 -c tcc.c -o mtc-tcc.obj -DTCC_MAIN=tcc_main -DTCC_TARGET_PE -DTCC_TARGET_X86_64
     if ($LASTEXITCODE) { throw "embedded TCC build failed" }
-    & $zig build-exe -O ReleaseSafe -femit-bin=mtc.exe mtc.zig mtc-tcc.obj -lc
+    & $zig build-exe -O ReleaseSafe mtc.zig mtc-tcc.obj -lc
     if ($LASTEXITCODE) { throw "MTC build failed" }
     & $zig test mtc.zig -lc
     if ($LASTEXITCODE) { throw "MTC unit tests failed" }
