@@ -10,5 +10,5 @@ make install DESTDIR="$tmp/installed" >/dev/null
 mv "$tmp/installed" "$tmp/relocated"
 env -u SDKROOT "$tmp/relocated/bin/tcc" \
     -B"$tmp/relocated/lib/tcc" \
-    "$PWD/examples/ex1.c" -o "$tmp/hello"
+    "$PWD/src/examples/ex1.c" -o "$tmp/hello"
 [ "$("$tmp/hello")" = "Hello World" ]

@@ -553,7 +553,7 @@ help:
 	@echo "   (*) tcc replaces {B} by 'tccdir' and {R} by 'CONFIG_SYSROOT'"
 
 test-relocate-macos:
-	sh $(TOPSRC)/tests/relocate-macos.sh
+	sh $(TOP)/tests/relocate-macos.sh
 
 test-mtcc: mtcc$(EXESUF)
 	$(ZIG) test $(MTCC_ZIG_FLAGS) $(TOP)/mtcc.zig -lc
