@@ -8,6 +8,11 @@
 /build/
 /dist/
 
+# generated bench artifacts (see bench/gen_synthetic.py, bench/run_benchmarks.py)
+/bench/bin/
+/bench/tmp_obj/
+/bench/synthetic/
+
 src/win32/doc
 src/win32/examples/libtcc_test.c
 src/win32/libtcc

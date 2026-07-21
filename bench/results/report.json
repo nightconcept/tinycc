@@ -1,0 +1,282 @@
+{
+  "synthetic": {
+    "c2m": {
+      "files": 300,
+      "failures": 0,
+      "batch_total_sec": 19.81886408297578,
+      "avg_per_file_sec": 0.0659312921037781,
+      "peak_rss_bytes": 6307840
+    },
+    "tcc": {
+      "files": 300,
+      "failures": 0,
+      "batch_total_sec": 47.56937429198297,
+      "avg_per_file_sec": 0.15842814096540678,
+      "peak_rss_bytes": 8093696
+    },
+    "gcc": {
+      "files": 300,
+      "failures": 0,
+      "batch_total_sec": 86.35554208300891,
+      "avg_per_file_sec": 0.28771158930059754,
+      "peak_rss_bytes": 67960832
+    },
+    "clang": {
+      "files": 300,
+      "failures": 0,
+      "batch_total_sec": 47.316529042000184,
+      "avg_per_file_sec": 0.157582671243775,
+      "peak_rss_bytes": 37502976
+    }
+  },
+  "micro": {
+    "fib": {
+      "c2m": {
+        "jit_combined": {
+          "wall": 0.2670074590132572,
+          "maxrss": 23920640,
+          "returncode": 0
+        },
+        "aot_build": {
+          "wall": 0.1073605419951491,
+          "maxrss": 23330816,
+          "returncode": 0
+        },
+        "aot_run": {
+          "wall": 0.2177582499862183,
+          "maxrss": 3407872,
+          "returncode": 0
+        }
+      },
+      "tcc": {
+        "jit_combined": {
+          "wall": 0.27870399999665096,
+          "maxrss": 7979008,
+          "returncode": 0
+        },
+        "aot_build": {
+          "wall": 0.2704003749822732,
+          "maxrss": 10518528,
+          "returncode": 0
+        },
+        "aot_run": {
+          "wall": 0.1810882499848958,
+          "maxrss": 1933312,
+          "returncode": 0
+        }
+      },
+      "gcc": {
+        "jit_combined": null,
+        "aot_build": {
+          "wall": 1.0786842080124188,
+          "maxrss": 67567616,
+          "returncode": 0
+        },
+        "aot_run": {
+          "wall": 0.09282379198702984,
+          "maxrss": 1900544,
+          "returncode": 0
+        }
+      },
+      "clang": {
+        "jit_combined": null,
+        "aot_build": {
+          "wall": 0.25720649998402223,
+          "maxrss": 49594368,
+          "returncode": 0
+        },
+        "aot_run": {
+          "wall": 0.1329414999927394,
+          "maxrss": 1900544,
+          "returncode": 0
+        }
+      }
+    },
+    "mandelbrot": {
+      "c2m": {
+        "jit_combined": {
+          "wall": 0.7757321250101086,
+          "maxrss": 23773184,
+          "returncode": 0
+        },
+        "aot_build": {
+          "wall": 0.10649820897378959,
+          "maxrss": 23494656,
+          "returncode": 0
+        },
+        "aot_run": {
+          "wall": 0.7249756659730338,
+          "maxrss": 3096576,
+          "returncode": 0
+        }
+      },
+      "tcc": {
+        "jit_combined": {
+          "wall": 1.5114592499739956,
+          "maxrss": 7979008,
+          "returncode": 0
+        },
+        "aot_build": {
+          "wall": 0.261161375005031,
+          "maxrss": 10518528,
+          "returncode": 0
+        },
+        "aot_run": {
+          "wall": 1.4184832080209162,
+          "maxrss": 1949696,
+          "returncode": 0
+        }
+      },
+      "gcc": {
+        "jit_combined": null,
+        "aot_build": {
+          "wall": 0.7340255830204114,
+          "maxrss": 67698688,
+          "returncode": 0
+        },
+        "aot_run": {
+          "wall": 0.6010202500037849,
+          "maxrss": 1900544,
+          "returncode": 0
+        }
+      },
+      "clang": {
+        "jit_combined": null,
+        "aot_build": {
+          "wall": 0.23216908299946226,
+          "maxrss": 50905088,
+          "returncode": 0
+        },
+        "aot_run": {
+          "wall": 0.5373522920126561,
+          "maxrss": 1900544,
+          "returncode": 0
+        }
+      }
+    },
+    "quicksort": {
+      "c2m": {
+        "jit_combined": {
+          "wall": 0.5306812089984305,
+          "maxrss": 24379392,
+          "returncode": 0
+        },
+        "aot_build": {
+          "wall": 0.10811879200628027,
+          "maxrss": 23543808,
+          "returncode": 0
+        },
+        "aot_run": {
+          "wall": 0.4865308750013355,
+          "maxrss": 4046848,
+          "returncode": 0
+        }
+      },
+      "tcc": {
+        "jit_combined": {
+          "wall": 0.7853035000152886,
+          "maxrss": 7979008,
+          "returncode": 0
+        },
+        "aot_build": {
+          "wall": 0.2622734169999603,
+          "maxrss": 10485760,
+          "returncode": 0
+        },
+        "aot_run": {
+          "wall": 0.6874031660263427,
+          "maxrss": 2752512,
+          "returncode": 0
+        }
+      },
+      "gcc": {
+        "jit_combined": null,
+        "aot_build": {
+          "wall": 0.7625947920023464,
+          "maxrss": 67715072,
+          "returncode": 0
+        },
+        "aot_run": {
+          "wall": 0.41694712499156594,
+          "maxrss": 2703360,
+          "returncode": 0
+        }
+      },
+      "clang": {
+        "jit_combined": null,
+        "aot_build": {
+          "wall": 0.23021275000064634,
+          "maxrss": 52150272,
+          "returncode": 0
+        },
+        "aot_run": {
+          "wall": 0.40911766700446606,
+          "maxrss": 2703360,
+          "returncode": 0
+        }
+      }
+    },
+    "sieve": {
+      "c2m": {
+        "jit_combined": {
+          "wall": 0.3480857079848647,
+          "maxrss": 24150016,
+          "returncode": 0
+        },
+        "aot_build": {
+          "wall": 0.10565412501455285,
+          "maxrss": 23379968,
+          "returncode": 0
+        },
+        "aot_run": {
+          "wall": 0.3043417910230346,
+          "maxrss": 4063232,
+          "returncode": 0
+        }
+      },
+      "tcc": {
+        "jit_combined": {
+          "wall": 0.733888000017032,
+          "maxrss": 7979008,
+          "returncode": 0
+        },
+        "aot_build": {
+          "wall": 0.26080316602019593,
+          "maxrss": 10485760,
+          "returncode": 0
+        },
+        "aot_run": {
+          "wall": 0.6449156250164378,
+          "maxrss": 2965504,
+          "returncode": 0
+        }
+      },
+      "gcc": {
+        "jit_combined": null,
+        "aot_build": {
+          "wall": 0.744205625000177,
+          "maxrss": 67518464,
+          "returncode": 0
+        },
+        "aot_run": {
+          "wall": 0.22524870798224583,
+          "maxrss": 2916352,
+          "returncode": 0
+        }
+      },
+      "clang": {
+        "jit_combined": null,
+        "aot_build": {
+          "wall": 0.23150875000283122,
+          "maxrss": 52494336,
+          "returncode": 0
+        },
+        "aot_run": {
+          "wall": 0.2631754589965567,
+          "maxrss": 2916352,
+          "returncode": 0
+        }
+      }
+    }
+  }
+}
