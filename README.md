@@ -1,9 +1,9 @@
-# MTCC (Modern Tiny C Compiler)
+# ZTCC (Zig Tiny C Compiler)
 
-MTCC is a Zig-built, single-file frontend around a vendored copy of
+ZTCC is a Zig-built, single-file frontend around a vendored copy of
 [TinyCC](https://bellard.org/tcc/). The unmodified-as-possible TinyCC
 sources, build system, and docs live in `src/`; everything at the repo
-root is MTCC-specific.
+root is ZTCC-specific.
 
 ## Quick start
 
@@ -11,40 +11,35 @@ root is MTCC-specific.
 mise install
 just hooks-install
 just build
-./build/mtcc hello.c
+./build/ztcc hello.c
 ```
 
 ## Usage
 
-Run a C file directly:
+`ztcc` is a thin Zig wrapper around TinyCC: it bundles the runtime and
+headers, then passes its arguments straight through to `tcc`.
 
 ```sh
-mtcc hello.c
-```
-
-Or route to an explicit subcommand:
-
-```sh
-mtcc run <file.c>     # compile and run
-mtcc build <file.c>   # compile to an executable
-mtcc lint <file.c>    # static checks, no build
-mtcc tcc [args...]    # pass args straight through to TinyCC
+ztcc -run hello.c     # compile and run
+ztcc hello.c -o hello # compile to an executable
+ztcc -v                # any other tcc argument works as-is
 ```
 
 ## Development
 
-All dev tasks go through `just` (see `justfile`):
+All dev tasks go through `just` (see `justfile`), each backed by a
+single-purpose script in `scripts/`:
 
 ```sh
-just build           # out-of-tree configure+build into build/
-just test-legacy     # vendored upstream TinyCC test suite
-just test-toolchain  # mtcc CLI tests (not compilation)
+just build           # scripts/build.py — out-of-tree configure+build into build/
+just test-legacy     # scripts/test_legacy.py — vendored upstream TinyCC test suite
+just test-toolchain  # scripts/test_toolchain.py — ztcc CLI tests (not compilation)
 just test            # both, legacy first
-just package         # copy build/mtcc into dist/
+just package         # scripts/package.py — copy build/ztcc into dist/
 just gate-fast       # fmt + zig unit tests (pre-commit)
 just gate            # gate-fast + build + full test suite (pre-push)
 ```
 
 ## License
 
-The mtcc project is licensed under the [`LGPL-2.1 LICENSE`](LICENSE).
+The ztcc project is licensed under the [`LGPL-2.1 LICENSE`](LICENSE).

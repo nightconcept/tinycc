@@ -1,6 +1,6 @@
-# MTCC backend benchmark: MIR/c2mir vs TinyCC
+# ZTCC backend benchmark: MIR/c2mir vs TinyCC
 
-Baseline for ratio columns: **tcc** (current mtcc backend).
+Baseline for ratio columns: **tcc** (current ztcc backend).
 
 ## 1. Synthetic build-time stress test (300 files, -c only)
 

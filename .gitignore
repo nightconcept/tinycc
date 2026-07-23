@@ -46,3 +46,4 @@ src/tests/vla_test
 src/tests/hello
 src/tests/tests2/fred.txt
 libtcc.dylib
+__pycache__/

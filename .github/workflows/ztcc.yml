@@ -1,4 +1,4 @@
-name: mtcc build and test
+name: ztcc build and test
 
 on:
   push:
@@ -25,8 +25,8 @@ jobs:
       - run: just ci
       - uses: actions/upload-artifact@v7
         with:
-          name: mtcc-${{ matrix.artifact }}
-          path: dist/mtcc-${{ matrix.artifact }}
+          name: ztcc-${{ matrix.artifact }}
+          path: dist/ztcc-${{ matrix.artifact }}
           if-no-files-found: error
 
   windows:
@@ -38,6 +38,6 @@ jobs:
         run: just ci
       - uses: actions/upload-artifact@v7
         with:
-          name: mtcc-windows-x64
-          path: dist/mtcc-windows-x64.exe
+          name: ztcc-windows-x64
+          path: dist/ztcc-windows-x64.exe
           if-no-files-found: error

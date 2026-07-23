@@ -23,15 +23,15 @@ def main():
     )
     args = parser.parse_args()
 
-    _run(["zig", "fmt", "--check", str(REPO_ROOT / "mtcc.zig")])
-    _run(["zig", "test", str(REPO_ROOT / "mtcc.zig"), "-lc"])
+    _run(["zig", "fmt", "--check", str(REPO_ROOT / "ztcc.zig")])
+    _run(["zig", "test", str(REPO_ROOT / "ztcc.zig"), "-lc"])
 
     if args.fast:
         return
 
-    _run(["python3", str(REPO_ROOT / "scripts" / "dev.py"), "build"])
-    _run(["python3", str(REPO_ROOT / "scripts" / "dev.py"), "test", "legacy"])
-    _run(["python3", str(REPO_ROOT / "scripts" / "dev.py"), "test", "toolchain"])
+    _run(["python3", str(REPO_ROOT / "scripts" / "build.py")])
+    _run(["python3", str(REPO_ROOT / "scripts" / "test_legacy.py")])
+    _run(["python3", str(REPO_ROOT / "scripts" / "test_toolchain.py")])
 
 
 if __name__ == "__main__":

@@ -133,7 +133,7 @@ TCCDOCS = tcc.1 tcc-doc.html tcc-doc.info
 all: $(PROGS) $(TCCLIBS) $(TCCDOCS)
 
 ZIG ?= zig
-MTCC_ZIG_FLAGS ?=
+ZTCC_ZIG_FLAGS ?=
 
 # cross compiler targets to build
 TCC_X = i386 x86_64 i386-win32 x86_64-win32 x86_64-osx arm arm64 arm64-win32 arm-wince c67
@@ -273,22 +273,22 @@ $(X)tcc.o : DEFINES += $(DEF_GITHASH)
 tcc$(EXESUF): tcc.o $(LIBTCC)
 	$S$(CC) -o $@ $^ $(addsuffix ,$(LIBS) $(LDFLAGS) $(LINK_LIBTCC))
 
-mtcc-tcc.o: $($T_FILES) $(TCCDEFS_H)
+ztcc-tcc.o: $($T_FILES) $(TCCDEFS_H)
 	$S$(CC) -o $@ -c $(TOPSRC)/tcc.c $(DEFINES) $(CFLAGS) -DTCC_MAIN=tcc_main
-mtcc-tcc.o: DEFINES += $(DEF_GITHASH)
+ztcc-tcc.o: DEFINES += $(DEF_GITHASH)
 
-mtcc-runtime.tar: libtcc1.a
-	@rm -rf .mtcc-runtime
-	@mkdir -p .mtcc-runtime/include
-	@cp $(TOPSRC)/include/*.h $(TOPSRC)/tcclib.h .mtcc-runtime/include
-	@cp libtcc1.a $(wildcard $(EXTRA_O)) .mtcc-runtime
-	@tar -cf $@ -C .mtcc-runtime .
-	@rm -rf .mtcc-runtime
+ztcc-runtime.tar: libtcc1.a
+	@rm -rf .ztcc-runtime
+	@mkdir -p .ztcc-runtime/include
+	@cp $(TOPSRC)/include/*.h $(TOPSRC)/tcclib.h .ztcc-runtime/include
+	@cp libtcc1.a $(wildcard $(EXTRA_O)) .ztcc-runtime
+	@tar -cf $@ -C .ztcc-runtime .
+	@rm -rf .ztcc-runtime
 
-MTCC_ZIG_SRC ?= $(TOP)/mtcc.zig
+ZTCC_ZIG_SRC ?= $(TOP)/ztcc.zig
 
-mtcc$(EXESUF): $(MTCC_ZIG_SRC) mtcc-tcc.o mtcc-runtime.tar
-	$S$(ZIG) build-exe $(MTCC_ZIG_FLAGS) -O ReleaseSafe -femit-bin=$@ $(MTCC_ZIG_SRC) mtcc-tcc.o -lc -lm -ldl -lpthread
+ztcc$(EXESUF): $(ZTCC_ZIG_SRC) ztcc-tcc.o ztcc-runtime.tar
+	$S$(ZIG) build-exe $(ZTCC_ZIG_FLAGS) -O ReleaseSafe -femit-bin=$@ $(ZTCC_ZIG_SRC) ztcc-tcc.o -lc -lm -ldl -lpthread
 
 # Cross Tiny C Compilers
 # (the TCCDEFS_H dependency is only necessary for parallel makes,
@@ -502,8 +502,8 @@ test-install: $(TCCDEFS_H)
 	@$(MAKE) -C tests TESTINSTALL=yes #_all
 
 clean:
-	@rm -f tcc mtcc *-tcc tcc_p tcc_c tcc_s mtcc-runtime.tar
-	@rm -rf .mtcc-runtime dist
+	@rm -f tcc ztcc *-tcc tcc_p tcc_c tcc_s ztcc-runtime.tar
+	@rm -rf .ztcc-runtime dist
 	@rm -f tags ETAGS *.o *.a *.so* *.out *.log lib*.def *.exe *.dll
 	@rm -f a.out *.dylib *_.h *.pod *.tcov
 	@$(MAKE) -s -C lib $@

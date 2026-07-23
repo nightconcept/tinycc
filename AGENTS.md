@@ -4,15 +4,16 @@
 
 ## Intent
 
-Maintain TinyCC and its thin MTCC frontend with small, reviewable changes that
+Maintain TinyCC and its thin ZTCC frontend with small, reviewable changes that
 remain easy to rebase onto upstream TinyCC.
 
 ## Stack
 
 - C90-oriented TinyCC compiler and GNU Make build
-- Zig frontend (`mtcc.zig`)
+- Zig frontend (`ztcc.zig`)
 - TinyCC compiler sources (`src/`)
-- `scripts/dev.py` build/test/package CLI, driven via `just` (tools pinned in `mise.toml`)
+- Single-purpose scripts in `scripts/` (build, test, package, ci), driven via
+  `just` (tools pinned in `mise.toml`)
 
 ## Essential Commands
 
@@ -20,13 +21,12 @@ remain easy to rebase onto upstream TinyCC.
 - **Gate**: `just gate-fast` (fmt + zig unit tests, runs pre-commit) or
   `just gate` (adds build + legacy + toolchain tests, runs pre-push)
 - **Build**: `just build` — out-of-tree configure+build into `build/` (objects,
-  libs, `tcc`, `mtcc`); repo root and `src/` stay clean
+  libs, `tcc`, `ztcc`); repo root and `src/` stay clean
 - **Test legacy (vendored upstream TinyCC suite)**: `just test-legacy`
-- **Test toolchain (mtcc CLI, not compilation)**: `just test-toolchain`
+- **Test toolchain (ztcc CLI, not compilation)**: `just test-toolchain`
 - **Test both, legacy first**: `just test`
-- **Package**: `just package` — copies `build/mtcc` into `dist/`
-- **Format Zig**: `zig fmt mtcc.zig`
-- **Lint C**: `./build/mtcc lint <file.c>` after `just build`
+- **Package**: `just package` — copies `build/ztcc` into `dist/`
+- **Format Zig**: `zig fmt ztcc.zig`
 
 ## Engineering Standards
 
@@ -35,7 +35,7 @@ remain easy to rebase onto upstream TinyCC.
 - Use [Conventional Commits](https://www.conventionalcommits.org/) for commits,
   such as `feat:`, `fix:`, `docs:`, `refactor:`, `test:`, and `chore:`.
 - Run the smallest relevant test before committing; use `just test-legacy` for C
-  changes and `just test-toolchain` for MTCC changes. Legacy tests always gate
+  changes and `just test-toolchain` for ZTCC changes. Legacy tests always gate
   before toolchain tests — `just test` enforces that order.
 
 ## Spoke Index
