@@ -11,6 +11,27 @@ extern "C" {
 #endif
 
 #include <ctype.h>
+
+/* _WIN32_WINNT version constants (normally sdkddkver.h) - missing from
+   this curated header set except WIN8/WINBLUE (added ad hoc by GLFW's own
+   win32_platform.h fallback). Added for GLFW's win32 backend
+   (winapi/vendor), which uses the full set unconditionally. */
+#ifndef _WIN32_WINNT_VISTA
+#define _WIN32_WINNT_VISTA 0x0600
+#endif
+#ifndef _WIN32_WINNT_WIN7
+#define _WIN32_WINNT_WIN7 0x0601
+#endif
+#ifndef _WIN32_WINNT_WIN8
+#define _WIN32_WINNT_WIN8 0x0602
+#endif
+#ifndef _WIN32_WINNT_WINBLUE
+#define _WIN32_WINNT_WINBLUE 0x0603
+#endif
+#ifndef _WIN32_WINNT_WIN10
+#define _WIN32_WINNT_WIN10 0x0A00
+#endif
+
 #define ANYSIZE_ARRAY 1
 
 //gr #include <specstrings.h>

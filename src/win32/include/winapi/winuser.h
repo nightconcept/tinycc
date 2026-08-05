@@ -1167,6 +1167,14 @@ extern "C" {
 #define WM_RBUTTONUP 0x0205
 #define WM_RBUTTONDBLCLK 0x0206
 #define WM_MBUTTONDOWN 0x0207
+/* MapVirtualKey(Ex) uMapType values - missing from this curated header
+   set, added for GLFW's win32 backend (winapi/vendor). */
+#define MAPVK_VK_TO_VSC 0
+#define MAPVK_VSC_TO_VK 1
+#define MAPVK_VK_TO_CHAR 2
+#define MAPVK_VSC_TO_VK_EX 3
+#define MAPVK_VK_TO_VSC_EX 4
+
 #define WM_MBUTTONUP 0x0208
 #define WM_MBUTTONDBLCLK 0x0209
 #define WM_MOUSEWHEEL 0x020A
@@ -5129,13 +5137,28 @@ extern "C" {
   typedef LPMONITORINFOEXA LPMONITORINFOEX;
 #endif
 #else
+  /* mc/tcc patch: upstream nested `MONITORINFO mi;` as a named member here,
+     which breaks callers (e.g. GLFW's win32_monitor.c) that set fields
+     directly on a MONITORINFOEXW instance (`mi.cbSize = ...`) the way real
+     mingw-w64 headers support via an anonymous struct member - flattened
+     to match. */
   typedef struct tagMONITORINFOEXA {
-    MONITORINFO mi;
+    __C89_NAMELESS struct {
+      DWORD cbSize;
+      RECT rcMonitor;
+      RECT rcWork;
+      DWORD dwFlags;
+    };
     CHAR szDevice[CCHDEVICENAME];
   } MONITORINFOEXA,*LPMONITORINFOEXA;
 
   typedef struct tagMONITORINFOEXW {
-    MONITORINFO mi;
+    __C89_NAMELESS struct {
+      DWORD cbSize;
+      RECT rcMonitor;
+      RECT rcWork;
+      DWORD dwFlags;
+    };
     WCHAR szDevice[CCHDEVICENAME];
   } MONITORINFOEXW,*LPMONITORINFOEXW;
 #ifdef UNICODE

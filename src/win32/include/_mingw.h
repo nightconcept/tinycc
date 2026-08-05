@@ -33,6 +33,19 @@
 #define __int64 long long
 #define _HAVE_INT64
 
+/* Windows' `long` is always 32-bit (LLP64) regardless of target bitness;
+   real mingw-w64 headers (winapi/vendor/rpc.h and friends) spell that out
+   as __LONG32 rather than `long` directly. tcc is always a 32-bit-long PE
+   target, so this is unconditionally `long` (see _mingw.h.in upstream, the
+   Cygwin/LP64 branch doesn't apply here). */
+#define __LONG32 long
+
+/* MS ABI's `long` literal suffix helper (real mingw-w64: _mingw_mac.h). tcc
+   is always a 32-bit-long PE target, so this is unconditionally the
+   __LP64__-false branch: appends `l` to make the literal a `long`. Used by
+   winapi/vendor headers (mmreg.h, objbase.h, ...). */
+#define __MSABI_LONG(x) x ## l
+
 #define __cdecl
 #define __declspec(x) __attribute__((x))
 #define __unaligned __attribute__((packed))

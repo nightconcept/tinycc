@@ -49,6 +49,16 @@ extern "C" {
   SHSTDAPI_(HINSTANCE) FindExecutableW(LPCWSTR lpFile,LPCWSTR lpDirectory,LPWSTR lpResult);
   SHSTDAPI_(LPWSTR *) CommandLineToArgvW(LPCWSTR lpCmdLine,int*pNumArgs);
 
+  /* mc/tcc patch: drag-and-drop API, absent from this minimal subset -
+     added for GLFW's win32 backend (WM_DROPFILES handling in
+     win32_window.c and win32_init.c's DragAcceptFiles() call). */
+  DECLARE_HANDLE(HDROP);
+  SHSTDAPI_(UINT) DragQueryFileA(HDROP hDrop, UINT iFile, LPSTR lpszFile, UINT cch);
+  SHSTDAPI_(UINT) DragQueryFileW(HDROP hDrop, UINT iFile, LPWSTR lpszFile, UINT cch);
+  SHSTDAPI_(WINBOOL) DragQueryPoint(HDROP hDrop, POINT *ppt);
+  SHSTDAPI_(void) DragFinish(HDROP hDrop);
+  SHSTDAPI_(void) DragAcceptFiles(HWND hWnd, WINBOOL fAccept);
+
 #ifdef __cplusplus
 }
 #endif
