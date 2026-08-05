@@ -368,7 +368,8 @@ case $targetos in
         cc=`command -v cc`
         cc=`readlink $cc || echo clang`
       fi
-      default tcc_sysincludepaths "{B}/include"
+      tcc_usrinclude="`xcrun --show-sdk-path`/usr/include"
+      default tcc_sysincludepaths "{B}/include:$tcc_usrinclude"
       if test "${confvars%new_macho*}" = "${confvars}"; then
           # if new_macho was not specified and (known) ver <= 10, use old (=no)
           osxver=$(sw_vers -productVersion 2>/dev/null)  # X.Y.Z
